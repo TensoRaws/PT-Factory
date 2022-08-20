@@ -4,7 +4,6 @@
 
 
 # Features
-* 无需安装额外工具，配置简单
 * 可生成对比截图，非对比截图
 * 可配置socks5代理来连接PTgen，图床
 * 生成精简的Mediainfo
@@ -12,6 +11,10 @@
 # 准备
 Prerequisites for [PT-Factory](https://github.com/Tohrusky/PT-Factory)
 ## Python > 3.6
+
+#### Linux玩家可能需要
+`apt install libmediainfo-dev`
+`apt install libgl1-mesa-glx`
 
 ## 运行
 * `git clone https://github.com/Tohrusky/PT-Factory`
