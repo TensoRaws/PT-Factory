@@ -9,15 +9,15 @@
 * 可配置socks5代理来连接PTgen，图床
 * 生成精简的Mediainfo
 
-# Prerequisites
+# 准备
 Prerequisites for [PT-Factory](https://github.com/Tohrusky/PT-Factory)
 ## Python > 3.6
 
-## Run
+## 运行
 * `git clone https://github.com/Tohrusky/PT-Factory`
 * `pip install -r requirements.txt`
 
-# Usage
+# 使用
 ## 使用前请先在./config.yaml填写配置文件
 ```
 usage: PT-Factory [-h] [-u URL] [-e ENCODE] [-s SOURCE]
@@ -41,7 +41,7 @@ optional arguments:
 proxy-settings:                                
   # socks5 proxy, 使用前请先配置好socks5代理, 使用时会检测其是否有效，未生效时等同false
 pt-gen: 
-  # 内置的pt-gen]服务器，可替换为自行搭建的，填写API和地址即可
+  # 内置的pt-gen服务器，可替换为自行搭建的，填写API和地址即可
 pic-hosting-settings:
   # 图床编号，图床地址和API
 mediainfo-settings:                           
@@ -53,6 +53,12 @@ upload-settings:
 upload-logo:
   # 使用额外的logo
 ```
+# 测试环境
+* Windows 11
+* Windows 10
+* Debian 9 AMD64
+* Debian 10 AMD64
+* Ubuntu 20.04 LTS ARM
 
 # ToDo
 
