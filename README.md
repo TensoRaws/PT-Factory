@@ -1,0 +1,2 @@
+# PT-Factory
+一个可以自动获得PTGen信息，精简版MediaInfo，Encode前后对比截图并自动上传图床，并且生成发布所需BBode的快速发种工具
