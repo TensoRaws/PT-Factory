@@ -1,0 +1,40 @@
+proxy-settings:
+  switch: false                                  # boolean || Enable proxy or not
+  # socks5 proxy, 使用前请先配置好socks5代理, switch为true时检测其是否有效
+  ip_port: localhost:11223                      # string  || Proxy host
+
+pt-gen:
+  APIKEY: 8hFJLiSqGRkHcPAu                      # String  || The TOKEN of the pt-gen server
+  URL: https://ptgen.srvfi.top/                 # String  || The URL of the pt-gen server
+
+pic-hosting-settings:
+  id: 0                                         # Integer || 选择的图床编号，默认为 0(即第一个图床)
+  # 0                                  
+  smms:
+    APIKEY: 4026589362386ejfgneRjIVRt4          # String  || The APIKEY of the smms server
+    URL: https://sm.ms/api/v2/upload            # String  || The URL of the smms server
+  # 1
+
+mediainfo-settings: 0                           # Integer || 选择的 mediainfo 格式编号，默认为 0(精简)
+
+torrent-settings:
+  announce-urls: https://srvfi.top/api/announce # String  || The trackers of the torrent server
+  # String  || The comment of the torrent
+  comment: SRVFI-Raws                           # String  || The comment of the torrent
+  created-by: SRVFI-Raws                        # String  || The creator of the torrent
+  mk-or-not: true                               # Boolean || Whether to create a torrent file or not
+
+upload-settings:
+  encode-or-dl: Encode                          # String  || Encode or WEB-DL or Remux
+  # String  || The mini-essay 开头的小作文
+  mini-essay: '[quote][b][size=3][color=blue]原盘来自U2，感谢原发布者[/color][/size][/b][/quote]
+  
+              [quote][b][size=3]原盘的画质尚可[/size][/b][/quote]'
+  upload-pic-num: 5                             # Integer || The number of pictures to upload per group
+  uploader-name: 'Tohrusky@SRVFI-Raws'           # String  || The name of the uploader
+
+upload-logo:
+  flag: true                                    # Boolean || Whether to show the logo or not
+  logo1: '[url=https://sm.ms/image/YrDuWZ91stKFzLl][img]https://s2.loli.net/2022/08/05/YrDuWZ91stKFzLl.png[/img][/url]'
+  logo2: '[url=https://sm.ms/image/Ea3jHpRGi76fqr4][img]https://s2.loli.net/2022/08/05/Ea3jHpRGi76fqr4.png[/img][/url]'
+  logo3: '[url=https://sm.ms/image/9iZHPU5hJnFlWIg][img]https://s2.loli.net/2022/07/10/9iZHPU5hJnFlWIg.png[/img][/url]'
