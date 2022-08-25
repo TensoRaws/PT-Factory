@@ -10,8 +10,8 @@ logger.add(os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/logs/
 worker01 = PtGenPlus.create()
 
 parser = argparse.ArgumentParser()
-parser.description = "如果不需要对比图，仅填写Encode路径或Source路径即可"
-parser.add_argument("-u", "--URL", help="豆瓣，bangumi,IMDB的详细URL", type=str)
+parser.description = "如果不需要对比图，仅填写-e或-s参数即可  ||  对于二次元番剧电影，可尝试不指定-u参数直接搜索"
+parser.add_argument("-u", "--URL", help="豆瓣，bangumi，IMDB的详细URL", type=str)
 parser.add_argument("-e", "--ENCODE", help="Encode资源路径", type=str)
 parser.add_argument("-s", "--SOURCE", help="Source资源路径", type=str)
 args = parser.parse_args()

@@ -112,8 +112,9 @@ class PtGenPlus:
 
         with open(file_name, "w", encoding="utf-8") as final_info:
             final_info.write(self.upload_settings["mini-essay"] + "\n")
+            pt_gen_path = self.encode_path if self.encode_path != "" else self.source_path
             final_info.write(self.get_pt_gen_info(self.bgm_douban_imdb_url, self.proxy_settings, self.pt_gen["URL"],
-                                                  self.pt_gen["APIKEY"]))
+                                                  self.pt_gen["APIKEY"], pt_gen_path))
 
         with open(file_name, "a", encoding="utf-8") as final_info:
             input_path = self.encode_path if self.encode_path != "" else self.source_path
@@ -170,11 +171,12 @@ class PtGenPlus:
 
     @staticmethod
     @logger.catch
-    def get_pt_gen_info(bgm_douban_imdb_url, proxy_settings, pt_gen_url, pt_gen_apikey):
+    def get_pt_gen_info(bgm_douban_imdb_url, proxy_settings, pt_gen_url, pt_gen_apikey, path):
         if bgm_douban_imdb_url == "":
-            return ""
-        else:
-            return PTools.get_pt_gen_info(bgm_douban_imdb_url, proxy_settings, pt_gen_url, pt_gen_apikey)
+            title = PTools.get_bangmumi_url(proxy_settings, path)
+            bgm_douban_imdb_url = PTools.pt_gen_search_bgm(title, proxy_settings, pt_gen_url, pt_gen_apikey)
+
+        return PTools.get_pt_gen_info(bgm_douban_imdb_url, proxy_settings, pt_gen_url, pt_gen_apikey)
 
     @logger.catch
     def get_media_info(self, input_path):

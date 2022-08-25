@@ -1,11 +1,30 @@
 import os
 import pathlib
+import string
 from torrentool.torrent import Torrent
 from .imagehosting.smms import *
 from .mediainfo import *
+from lxml import etree
 
 
 class PTools:
+    @staticmethod
+    @logger.catch
+    def check_proxy(proxy: dict) -> bool:
+        if not proxy["switch"]:
+            logger.info("Not using proxy")
+            return False
+        try:
+            proxies = {"http" : "socks5://" + proxy["ip_port"],
+                       "https": "socks5://" + proxy["ip_port"]}
+            requests.get("https://www.baidu.com", proxies=proxies)
+            logger.info("Proxy check success, using proxy")
+            return True
+        except Exception as e:
+            logger.warning(e)
+            logger.warning("Proxy check failed, not using proxy")
+            return False
+
     @staticmethod
     @retry(wait=wait_random(min=2, max=4), stop=stop_after_delay(30) | stop_after_attempt(10))
     @logger.catch
@@ -39,6 +58,74 @@ class PTools:
             raise e
 
     @staticmethod
+    @retry(wait=wait_random(min=2, max=4), stop=stop_after_delay(30) | stop_after_attempt(10))
+    @logger.catch
+    def pt_gen_search_bgm(title: str, proxy: dict, pt_gen_url: str, pt_gen_api: str) -> str:
+        if PTools.check_proxy(proxy):
+            pt_gen_search_bgm_proxy = {
+                "http" : "socks5://" + proxy["ip_port"],
+                "https": "socks5://" + proxy["ip_port"]
+            }
+        else:
+            pt_gen_search_bgm_proxy = None
+
+        logger.info("正在搜索bangumi...")
+        p = {
+            "apikey": pt_gen_api,
+            "search": title,
+            "source": "bangumi"
+        }
+        res_list = requests.get(url=pt_gen_url, params=p, proxies=pt_gen_search_bgm_proxy).json()["data"]
+        logger.info(res_list)
+        for item in res_list:
+            try:
+                if item["subtype"] == "动画/二次元番":
+                    logger.info("bgm链接为" + item["link"])
+                    return item["link"]
+            except Exception as e:
+                logger.warning(e)
+
+        return ""
+
+    @staticmethod
+    @retry(wait=wait_random(min=2, max=4), stop=stop_after_delay(30) | stop_after_attempt(10))
+    @logger.catch
+    def get_bangmumi_url(proxy: dict, path: str) -> str:
+        url = "https://anidb.net/search/anime/"
+        path = str(pathlib.PureWindowsPath(path)).split("\\")[-1]
+        for i in path:
+            if i in string.punctuation:
+                path = path.replace(i, " ")
+        logger.info("搜索Anidb中...动画名为" + path)
+        if PTools.check_proxy(proxy):
+            get_bangmumi_url_proxy = {
+                "http" : "socks5://" + proxy["ip_port"],
+                "https": "socks5://" + proxy["ip_port"]
+            }
+        else:
+            get_bangmumi_url_proxy = None
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+                          "Chrome/80.0.3987.149 Safari/537.36"
+        }
+        p = {
+            "adb.search": path,
+            "do.search" : 1
+        }
+        title = ""
+        try:
+            title = etree.HTML(requests.get(
+                url=url, params=p, headers=headers, proxies=get_bangmumi_url_proxy).text).xpath(
+                '//*[@id="layout-main"]/div[1]/div[2]/table/tbody/tr[1]/td[4]/a/text()')[0]
+        except Exception as e:
+            logger.warning(e)
+        for item in title:
+            if item in string.punctuation:
+                title = title.replace(item, " ")
+        logger.info("获取title成功" + title)
+        return title
+
+    @staticmethod
     @logger.catch
     def get_media_info(mediainfo_settings: int, file_path: str, encode_or_dl: str, uploader_name: str) -> list:
         choose_media_info = {
@@ -46,6 +133,18 @@ class PTools:
         }
 
         return choose_media_info[mediainfo_settings](file_path, encode_or_dl, uploader_name)
+
+    # 返回图床BBcode
+    @staticmethod
+    @logger.catch
+    def upload_to_pic_hosting(proxy: dict, pic_hosting_settings: dict, image_path: str) -> str:
+        proxy["switch"] = True if PTools.check_proxy(proxy) else False
+
+        choose_pic_hosting = {
+            0: lambda a, b, c: upload_to_smms(a, b, c)
+        }
+
+        return choose_pic_hosting[pic_hosting_settings["id"]](proxy, pic_hosting_settings, image_path)
 
     @staticmethod
     @logger.catch
@@ -57,7 +156,7 @@ class PTools:
             logger.error(e)
             logger.error("获取torrent配置文件失败，请检查配置文件是否正确")
             sys.exit(1)
-        output_path =  os.path.abspath(os.path.join(
+        output_path = os.path.abspath(os.path.join(
             output_path, str(pathlib.PureWindowsPath(mktorrent_path)).split("\\")[-1] + ".torrent"
         ))
 
@@ -73,32 +172,3 @@ class PTools:
         logger.info(torrent_config)
         new_torrent.to_file(output_path)
         logger.info("生成torrent文件成功")
-
-    @staticmethod
-    @logger.catch
-    def check_proxy(proxy: dict) -> bool:
-        if not proxy["switch"]:
-            logger.info("Not using proxy")
-            return False
-        try:
-            proxies = {"http" : "socks5://" + proxy["ip_port"],
-                       "https": "socks5://" + proxy["ip_port"]}
-            requests.get("https://www.baidu.com", proxies=proxies)
-            logger.info("Proxy check success, using proxy")
-            return True
-        except Exception as e:
-            logger.warning(e)
-            logger.warning("Proxy check failed, not using proxy")
-            return False
-
-    # 返回图床BBcode
-    @staticmethod
-    @logger.catch
-    def upload_to_pic_hosting(proxy: dict, pic_hosting_settings: dict, image_path: str) -> str:
-        proxy["switch"] = True if PTools.check_proxy(proxy) else False
-
-        choose_pic_hosting = {
-            0: lambda a, b, c: upload_to_smms(a, b, c)
-        }
-
-        return choose_pic_hosting[pic_hosting_settings["id"]](proxy, pic_hosting_settings, image_path)

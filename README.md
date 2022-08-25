@@ -2,11 +2,11 @@
 ### 一个可以自动获得PTGen信息，精简版MediaInfo，重编码前后对比截图并自动上传图床，生成发布所需BBode的PT快速发种工具
 
 
-
 # Features
-* 可生成对比截图，非对比截图
+* 可生成重编码前后对比截图，单个视频截图
 * 可配置socks5代理来连接PTgen，图床
 * 生成精简的Mediainfo
+* 动漫自动匹配bangumi生成信息
 
 # 准备
 Prerequisites for [PT-Factory](https://github.com/Tohrusky/PT-Factory)
@@ -16,20 +16,23 @@ Prerequisites for [PT-Factory](https://github.com/Tohrusky/PT-Factory)
 `apt install libmediainfo-dev`
 `apt install libgl1-mesa-glx`
 
-## 运行
+## Run
 * `git clone https://github.com/Tohrusky/PT-Factory`
 * `pip install -r requirements.txt`
+
+## 快速开始
+ `python PT-Factory -e "/home/Toaru Kagaku no Railgun T - 01 [BDRip 2160p HEVC-Main10 FLAC].mkv"`
 
 # 使用
 ## 使用前请先在./config.yaml填写配置文件
 ```
 usage: PT-Factory [-h] [-u URL] [-e ENCODE] [-s SOURCE]
 
-如果不需要对比图，仅填写Encode路径或Source路径即可
+如果不需要对比图，仅填写-e或-s参数即可 || 对于二次元番剧电影，可尝试不指定-u参数直接搜索
 
 optional arguments:
   -h, --help            show this help message and exit
-  -u URL, --URL URL     豆瓣，bangumi,IMDB的详细URL
+  -u URL, --URL URL     豆瓣，bangumi，IMDB的详细URL
   -e ENCODE, --ENCODE ENCODE
                         Encode资源路径
   -s SOURCE, --SOURCE SOURCE
