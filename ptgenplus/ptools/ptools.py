@@ -15,8 +15,10 @@ class PTools:
             logger.info("Not using proxy")
             return False
         try:
-            proxies = {"http" : "socks5://" + proxy["ip_port"],
-                       "https": "socks5://" + proxy["ip_port"]}
+            proxies = {
+                "http" : "socks5://" + proxy["ip_port"],
+                "https": "socks5://" + proxy["ip_port"]
+            }
             requests.get("https://www.baidu.com", proxies=proxies)
             logger.info("Proxy check success, using proxy")
             return True
@@ -30,8 +32,10 @@ class PTools:
     @logger.catch
     def get_pt_gen_info(bgm_douban_imdb_url: str, proxy: dict, pt_gen_url: str, pt_gen_api: str) -> str:
         if PTools.check_proxy(proxy):
-            pt_gen_proxy = {"http" : "socks5://" + proxy["ip_port"],
-                            "https": "socks5://" + proxy["ip_port"]}
+            pt_gen_proxy = {
+                "http" : "socks5://" + proxy["ip_port"],
+                "https": "socks5://" + proxy["ip_port"]
+            }
         else:
             pt_gen_proxy = None
 
@@ -72,8 +76,9 @@ class PTools:
             "search": title,
             "source": "bangumi"
         }
+        res = requests.get(url=pt_gen_url, params=p, proxies=pt_gen_search_bgm_proxy).json()
         try:
-            res_list = requests.get(url=pt_gen_url, params=p, proxies=pt_gen_search_bgm_proxy).json()["data"]
+            res_list = res["data"]
             logger.info(res_list)
             for item in res_list:
                 if item["subtype"] == "动画/二次元番":
