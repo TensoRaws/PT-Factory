@@ -44,9 +44,6 @@ class PTools:
         logger.info("ptgen params: {}".format(dict_pt_gen_params))
         try:
             pt_gen_response = requests.get(url=pt_gen_url, params=dict_pt_gen_params, proxies=pt_gen_proxy).json()
-            if "error" in pt_gen_response and pt_gen_response["error"] is not None:
-                logger.error("ptgen API填写错误，请检查 || " + str(pt_gen_response))
-                sys.exit(1)
             if pt_gen_response["success"]:
                 logger.info("获取ptgen信息成功")
                 return pt_gen_response["format"]
@@ -54,7 +51,7 @@ class PTools:
                 logger.error("未查询到信息，ptgen返回结果：" + str(pt_gen_response))
                 sys.exit(1)
         except Exception as e:
-            logger.warning("获取ptgen信息失败，正在重试...请检查url和网络连接")
+            logger.warning("获取ptgen信息失败，正在重试...请检查api，url和网络连接")
             raise e
 
     @staticmethod
@@ -75,17 +72,19 @@ class PTools:
             "search": title,
             "source": "bangumi"
         }
-        res_list = requests.get(url=pt_gen_url, params=p, proxies=pt_gen_search_bgm_proxy).json()["data"]
-        logger.info(res_list)
-        for item in res_list:
-            try:
+        try:
+            res_list = requests.get(url=pt_gen_url, params=p, proxies=pt_gen_search_bgm_proxy).json()["data"]
+            logger.info(res_list)
+            for item in res_list:
                 if item["subtype"] == "动画/二次元番":
                     logger.info("bgm链接为" + item["link"])
                     return item["link"]
-            except Exception as e:
-                logger.warning(e)
-
-        return ""
+        except Exception as e:
+            logger.warning(e)
+            link = input("罗马音为" + title + "   搜索失败，请手动输入url: ")
+            logger.info("罗马音为" + title + "   搜索失败，请手动输入url: ")
+            logger.info(link)
+            return link
 
     @staticmethod
     @retry(wait=wait_random(min=2, max=4), stop=stop_after_delay(30) | stop_after_attempt(10))

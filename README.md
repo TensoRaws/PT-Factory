@@ -4,7 +4,7 @@
 
 # Features
 * 可生成重编码前后对比截图，单个视频截图
-* 可配置socks5代理来连接PTgen，图床
+* 可配置socks5代理来进行网络请求
 * 生成精简的Mediainfo
 * 动漫自动匹配bangumi生成信息
 
