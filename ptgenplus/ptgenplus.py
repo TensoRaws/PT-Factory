@@ -173,8 +173,8 @@ class PtGenPlus:
     @logger.catch
     def get_pt_gen_info(bgm_douban_imdb_url, proxy_settings, pt_gen_url, pt_gen_apikey, path):
         if bgm_douban_imdb_url == "":
-            title = PTools.get_bangmumi_url(proxy_settings, path)
-            bgm_douban_imdb_url = PTools.pt_gen_search_bgm(title, proxy_settings, pt_gen_url, pt_gen_apikey)
+            title = PTools.search_anidb(proxy_settings, path)
+            bgm_douban_imdb_url = PTools.search_bgm(title, proxy_settings)
 
         return PTools.get_pt_gen_info(bgm_douban_imdb_url, proxy_settings, pt_gen_url, pt_gen_apikey)
 

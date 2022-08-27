@@ -61,45 +61,55 @@ class PTools:
     @staticmethod
     @retry(wait=wait_random(min=2, max=4), stop=stop_after_delay(30) | stop_after_attempt(10))
     @logger.catch
-    def pt_gen_search_bgm(title: str, proxy: dict, pt_gen_url: str, pt_gen_api: str) -> str:
+    def search_bgm(title: str, proxy: dict) -> str:
         if PTools.check_proxy(proxy):
-            pt_gen_search_bgm_proxy = {
+            search_bgm_proxy = {
                 "http" : "socks5://" + proxy["ip_port"],
                 "https": "socks5://" + proxy["ip_port"]
             }
         else:
-            pt_gen_search_bgm_proxy = None
+            search_bgm_proxy = None
 
         logger.info("正在搜索bangumi...")
-        p = {
-            "apikey": pt_gen_api,
-            "search": title,
-            "source": "bangumi"
+        url = "https://bgm.tv/subject_search/" + title
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+                          "Chrome/80.0.3987.149 Safari/537.36"
         }
-        res = requests.get(url=pt_gen_url, params=p, proxies=pt_gen_search_bgm_proxy).json()
+        p = {
+            "cat": 2
+        }
+
         try:
-            res_list = res["data"]
-            logger.info(res_list)
-            for item in res_list:
-                if item["subtype"] == "动画/二次元番":
-                    logger.info("bgm链接为" + item["link"])
-                    return item["link"]
+            req_res = requests.get(url=url, params=p, proxies=search_bgm_proxy, headers=headers).text
         except Exception as e:
             logger.warning(e)
-            link = input("罗马音为" + title + "   搜索失败，请手动输入url: ")
-            logger.info("罗马音为" + title + "   搜索失败，请手动输入url: ")
-            logger.info(link)
-            return link
+            logger.warning("网络请求失败，重试中")
+            raise e
+
+        try:
+            res = etree.HTML(req_res).xpath(
+                '//*[@id="browserItemList"]//li[contains(@id, "item")][1]/a/@href')[0]
+        except Exception as e:
+            logger.warning(e)
+            logger.warning("未查询到bgm信息，请手动输入")
+            res = input("手动填入bgm/douban/idmb地址：")
+            logger.info(res)
+            return res
+        res = "https://bgm.tv" + res
+        logger.info(res)
+        return res
 
     @staticmethod
     @retry(wait=wait_random(min=2, max=4), stop=stop_after_delay(30) | stop_after_attempt(10))
     @logger.catch
-    def get_bangmumi_url(proxy: dict, path: str) -> str:
-        url = "https://anidb.net/search/anime/"
+    def search_anidb(proxy: dict, path: str) -> str:
+        # 清洗特殊符号
         path = str(pathlib.PureWindowsPath(path)).split("\\")[-1]
         for i in path:
             if i in string.punctuation:
                 path = path.replace(i, " ")
+
         logger.info("搜索Anidb中...动画名为" + path)
         if PTools.check_proxy(proxy):
             get_bangmumi_url_proxy = {
@@ -116,18 +126,51 @@ class PTools:
             "adb.search": path,
             "do.search" : 1
         }
-        title = ""
+        url = "https://anidb.net/search/anime/"
         try:
-            title = etree.HTML(requests.get(
-                url=url, params=p, headers=headers, proxies=get_bangmumi_url_proxy).text).xpath(
-                '//*[@id="layout-main"]/div[1]/div[2]/table/tbody/tr[1]/td[4]/a/text()')[0]
+            req_title_url = requests.get(url=url, params=p, headers=headers, proxies=get_bangmumi_url_proxy).text
         except Exception as e:
             logger.warning(e)
-        for item in title:
+            logger.warning("网络请求失败，重试中")
+            raise e
+        # 获取详情界面url
+        title_url = ""
+        try:
+            title_url = etree.HTML(req_title_url).xpath(
+                '//*[@id="layout-main"]/div[1]/div[2]/table/tbody/tr[1]/td[4]/a/@href')[0]
+        except Exception as e:
+            logger.warning(e)
+
+        title_url = "https://anidb.net" + title_url
+        logger.info("title_url: " + title_url)
+        try:
+            req_title_name = requests.get(url=title_url, headers=headers, proxies=get_bangmumi_url_proxy).text
+        except Exception as e:
+            logger.warning(e)
+            logger.warning("网络请求失败，重试中")
+            raise e
+        # 优先使用日语标题
+        try:
+            title_name = etree.HTML(req_title_name).xpath(
+                '//*[@id="tab_1_pane"]/div/table/tbody/tr[3]/td/label/text()')[0]
+        except Exception as e:
+            logger.warning(e)
+            logger.warning("标题#3不存在，尝试获取标题#2")
+            try:
+                title_name = etree.HTML(req_title_name).xpath(
+                    '//*[@id="tab_1_pane"]/div/table/tbody/tr[2]/td/label/text()')[0]
+            except Exception as e:
+                logger.warning(e)
+                logger.warning("标题#2不存在，尝试获取主标题")
+                title_name = etree.HTML(req_title_name).xpath(
+                    '//*[@id="tab_1_pane"]/div/table/tbody/tr[1]/td/span/text()')[0]
+        # 清洗特殊符号
+        for item in title_name:
             if item in string.punctuation:
-                title = title.replace(item, " ")
-        logger.info("获取title成功" + title)
-        return title
+                title_name = title_name.replace(item, " ")
+
+        logger.info("获取title成功" + title_name)
+        return title_name
 
     @staticmethod
     @logger.catch
