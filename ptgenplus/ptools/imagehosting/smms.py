@@ -4,8 +4,8 @@ from loguru import logger
 from tenacity import retry, wait_random, stop_after_delay, stop_after_attempt
 
 
-@retry(wait=wait_random(min=3, max=5), stop=stop_after_delay(10) | stop_after_attempt(30))
 @logger.catch
+@retry(wait=wait_random(min=3, max=5), stop=stop_after_delay(10) | stop_after_attempt(30))
 def upload_to_smms(proxy, pic_hosting_settings, image_path) -> str:
     files = {'smfile': open(image_path, 'rb')}
     smms_settings = pic_hosting_settings["smms"]

@@ -28,8 +28,8 @@ class PTools:
             return False
 
     @staticmethod
-    @retry(wait=wait_random(min=2, max=4), stop=stop_after_delay(30) | stop_after_attempt(10))
     @logger.catch
+    @retry(wait=wait_random(min=2, max=4), stop=stop_after_delay(30) | stop_after_attempt(10))
     def get_pt_gen_info(bgm_douban_imdb_url: str, proxy: dict, pt_gen_url: str, pt_gen_api: str) -> str:
         if PTools.check_proxy(proxy):
             pt_gen_proxy = {
@@ -59,8 +59,8 @@ class PTools:
             raise e
 
     @staticmethod
-    @retry(wait=wait_random(min=2, max=4), stop=stop_after_delay(30) | stop_after_attempt(10))
     @logger.catch
+    @retry(wait=wait_random(min=2, max=4), stop=stop_after_delay(30) | stop_after_attempt(10))
     def search_bgm(title: str, proxy: dict) -> str:
         if PTools.check_proxy(proxy):
             search_bgm_proxy = {
@@ -101,8 +101,8 @@ class PTools:
         return res
 
     @staticmethod
-    @retry(wait=wait_random(min=2, max=4), stop=stop_after_delay(30) | stop_after_attempt(10))
     @logger.catch
+    @retry(wait=wait_random(min=2, max=4), stop=stop_after_delay(30) | stop_after_attempt(10))
     def search_anidb(proxy: dict, path: str) -> str:
         # 清洗特殊符号
         path = str(pathlib.PureWindowsPath(path)).split("\\")[-1]
