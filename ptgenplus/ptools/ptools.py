@@ -140,6 +140,8 @@ class PTools:
                 '//*[@id="layout-main"]/div[1]/div[2]/table/tbody/tr[1]/td[4]/a/@href')[0]
         except Exception as e:
             logger.warning(e)
+            logger.info("未查询到ANIDB结果")
+            return "未查询到ANIDB结果"
 
         title_url = "https://anidb.net" + title_url
         logger.info("title_url: " + title_url)
@@ -169,7 +171,7 @@ class PTools:
             if item in string.punctuation:
                 title_name = title_name.replace(item, " ")
 
-        logger.info("获取title成功" + title_name)
+        logger.info("获取title成功： " + title_name)
         return title_name
 
     @staticmethod
