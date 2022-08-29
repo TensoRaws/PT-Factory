@@ -110,6 +110,8 @@ class PtGenPlus:
 
         logger.info("Generate final info name: {}".format(file_name))
 
+        self.proxy_settings["switch"] = True if PTools.check_proxy(self.proxy_settings) else False
+
         with open(file_name, "w", encoding="utf-8") as final_info:
             final_info.write(self.upload_settings["mini-essay"] + "\n")
             pt_gen_path = self.encode_path if self.encode_path != "" else self.source_path

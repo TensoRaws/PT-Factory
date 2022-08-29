@@ -31,7 +31,7 @@ class PTools:
     @logger.catch
     @retry(wait=wait_random(min=2, max=4), stop=stop_after_delay(30) | stop_after_attempt(10))
     def get_pt_gen_info(bgm_douban_imdb_url: str, proxy: dict, pt_gen_url: str, pt_gen_api: str) -> str:
-        if PTools.check_proxy(proxy):
+        if proxy["switch"]:
             pt_gen_proxy = {
                 "http" : "socks5://" + proxy["ip_port"],
                 "https": "socks5://" + proxy["ip_port"]
@@ -62,7 +62,7 @@ class PTools:
     @logger.catch
     @retry(wait=wait_random(min=2, max=4), stop=stop_after_delay(30) | stop_after_attempt(10))
     def search_bgm(title: str, proxy: dict) -> str:
-        if PTools.check_proxy(proxy):
+        if proxy["switch"]:
             search_bgm_proxy = {
                 "http" : "socks5://" + proxy["ip_port"],
                 "https": "socks5://" + proxy["ip_port"]
@@ -111,7 +111,7 @@ class PTools:
                 path = path.replace(i, " ")
 
         logger.info("搜索Anidb中...动画名为" + path)
-        if PTools.check_proxy(proxy):
+        if proxy["switch"]:
             get_bangmumi_url_proxy = {
                 "http" : "socks5://" + proxy["ip_port"],
                 "https": "socks5://" + proxy["ip_port"]
@@ -187,8 +187,6 @@ class PTools:
     @staticmethod
     @logger.catch
     def upload_to_pic_hosting(proxy: dict, pic_hosting_settings: dict, image_path: str) -> str:
-        proxy["switch"] = True if PTools.check_proxy(proxy) else False
-
         choose_pic_hosting = {
             0: lambda a, b, c: upload_to_smms(a, b, c)
         }
