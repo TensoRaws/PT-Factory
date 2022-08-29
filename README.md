@@ -22,6 +22,9 @@ Prerequisites for [PT-Factory](https://github.com/Tohrusky/PT-Factory)
 
 ## 快速开始
  `python PT-Factory -e "/home/Toaru Kagaku no Railgun T - 01 [BDRip 2160p HEVC-Main10 FLAC].mkv"`
+ 
+## 效果
+![pt-factory-sample _2_.png](https://s2.loli.net/2022/08/29/mBCIih9NEFyYzPg.png)
 
 # 使用
 ## 使用前请先在./config.yaml填写配置文件
