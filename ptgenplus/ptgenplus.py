@@ -20,7 +20,7 @@ class PtGenPlus:
                  torrent_settings=None,
                  upload_settings=None,
                  upload_logo=None,
-                 mediainfo_settings=0,
+                 mediainfo_settings=None,
                  ):
         self.bgm_douban_imdb_url = bgm_douban_imdb_url  # bgm，豆瓣，imdb详细url
         self.encode_path = encode_path  # Encode视频地址
@@ -87,6 +87,7 @@ class PtGenPlus:
             torrent_settings=config["torrent-settings"],
             upload_settings=config["upload-settings"],
             upload_logo=config["upload-logo"],
+            mediainfo_settings=config["mediainfo-settings"]
         )
 
     @logger.catch
@@ -122,9 +123,9 @@ class PtGenPlus:
             input_path = self.encode_path if self.encode_path != "" else self.source_path
             logo = self.upload_logo
             if logo["flag"]:
-                final_info.write("\n\n" + "[quote][font=Courier New]" + logo["logo1"])
+                final_info.write("\n\n" + "[quote][font=Courier New]" + logo["logo1"] + "\n")
             else:
-                final_info.write("\n\n" + "[quote][font=Courier New]")
+                final_info.write("\n\n" + "[quote][font=Courier New]" + "\n")
 
             for i1 in self.get_media_info(input_path):
                 final_info.write(i1)

@@ -15,7 +15,7 @@ def get_media_info(input_path: str, encode_or_dl: str, uploader_name: str) -> li
     encode_tracks = json.loads(encode_media_info)["media"]["track"]
 
     write_info_list.append(
-        "\n" + "RELEASE.NAME........: " +
+        "RELEASE.NAME........: " +
         str(pathlib.PureWindowsPath(write_path)).split("\\")[-1])
     write_info_list.append(
         "\n" + "RELEASE.DATE........: " +

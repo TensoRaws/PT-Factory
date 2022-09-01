@@ -178,7 +178,8 @@ class PTools:
     @logger.catch
     def get_media_info(mediainfo_settings: int, file_path: str, encode_or_dl: str, uploader_name: str) -> list:
         choose_media_info = {
-            0: lambda a, b, c: get_media_info_0(a, b, c)
+            0: lambda a, b, c: get_media_info_0(a, b, c),
+            1: lambda a, b, c: get_media_info_1(a, b, c)
         }
 
         return choose_media_info[mediainfo_settings](file_path, encode_or_dl, uploader_name)

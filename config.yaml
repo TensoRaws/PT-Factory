@@ -16,7 +16,7 @@ pic-hosting-settings:
   # 1
 
 mediainfo-settings: 0                           # Integer || 选择的 mediainfo 格式编号，默认为 0(精简)
-
+                                                           #0 精简 || 1 完整
 torrent-settings:
   announce-urls: https://srvfi.top/api/announce # String  || The trackers of the torrent server
   # String  || The comment of the torrent
