@@ -1,5 +1,5 @@
 proxy-settings:
-  switch: false                                  # boolean || Enable proxy or not
+  switch: false                                 # boolean || Enable proxy or not
   # socks5 proxy, 使用前请先配置好socks5代理, switch为true时检测其是否有效
   ip_port: localhost:11223                      # string  || Proxy host
 
@@ -8,15 +8,19 @@ pt-gen:
   URL: https://ptgen.srvfi.top/                 # String  || The URL of the pt-gen server
 
 pic-hosting-settings:
-  id: 0                                         # Integer || 选择的图床编号，默认为 0(即第一个图床)
+  id: 0                                         # Integer || 选择的图床编号，默认为 0(即第一个图床smms)
   # 0                                  
   smms:
     APIKEY: 4026589362386ejfgneRjIVRt4          # String  || The APIKEY of the smms server
     URL: https://sm.ms/api/v2/upload            # String  || The URL of the smms server
   # 1
+  imgurl:
+    TOKEN: 27256gsegf8ced8bdf2536456fgaggc9     # String  || The TOKEN of the imgurl server
+    UID: e347baaghjtywey235e23654444gfa52       # String  || The UID of the imgurl server
+    URL: https://www.imgurl.org/api/v2/upload   # String  || The URL of the imgurl server
 
 mediainfo-settings: 0                           # Integer || 选择的 mediainfo 格式编号，默认为 0(精简)
-                                                           #0 精简 || 1 完整
+                                                # 0-精简 , 1-完整
 torrent-settings:
   announce-urls: https://srvfi.top/api/announce # String  || The trackers of the torrent server
   # String  || The comment of the torrent
@@ -31,7 +35,7 @@ upload-settings:
   
               [quote][b][size=3]原盘的画质尚可[/size][/b][/quote]'
   upload-pic-num: 5                             # Integer || The number of pictures to upload per group
-  uploader-name: 'Tohrusky@SRVFI-Raws'           # String  || The name of the uploader
+  uploader-name: 'Tohrusky@SRVFI-Raws'          # String  || The name of the uploader
 
 upload-logo:
   flag: true                                    # Boolean || Whether to show the logo or not

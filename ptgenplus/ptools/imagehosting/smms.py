@@ -23,7 +23,6 @@ def upload_to_smms(proxy, pic_hosting_settings, image_path) -> str:
     else:
         proxies = None
 
-    logger.info("headers: " + str(smms_headers))
     try:
         smms_response = requests.post(smms_settings["URL"], files=files, headers=smms_headers, proxies=proxies)
         smms_json = smms_response.json()

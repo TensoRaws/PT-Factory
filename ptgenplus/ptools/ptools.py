@@ -1,8 +1,12 @@
 import os
 import pathlib
 import string
+import sys
+import requests
+from loguru import logger
+from tenacity import retry, wait_random, stop_after_delay, stop_after_attempt
 from torrentool.torrent import Torrent
-from .imagehosting.smms import *
+from .imagehosting import *
 from .mediainfo import *
 from lxml import etree
 
@@ -189,7 +193,8 @@ class PTools:
     @logger.catch
     def upload_to_pic_hosting(proxy: dict, pic_hosting_settings: dict, image_path: str) -> str:
         choose_pic_hosting = {
-            0: lambda a, b, c: upload_to_smms(a, b, c)
+            0: lambda a, b, c: upload_to_smms(a, b, c),
+            1: lambda a, b, c: upload_to_imgurl(a, b, c)
         }
 
         return choose_pic_hosting[pic_hosting_settings["id"]](proxy, pic_hosting_settings, image_path)
