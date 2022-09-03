@@ -41,24 +41,3 @@ def upload_to_imgurl(proxy, pic_hosting_settings, image_path) -> str:
     except Exception as e:
         logger.warning("上传失败，重试中" + str(e))
         raise e
-
-
-# if __name__ == "__main__":
-#     proxy = {
-#         "switch" : False,  # boolean || Enable proxy or not
-#         # socks5 proxy, 使用前请先配置好socks5代理, switch为true时检测其是否有效
-#         "ip_port": "localhost:11223"  # string  || Proxy host
-#     }
-#     s = {
-#         "imgurl": {
-#             "TOKEN": "2732bf8ced8bdf253665b9cb58b312c9",  # String  || The TOKEN of the imgurl server
-#             "UID"  : "ee7baa81c3229235e4392bb523891a52",  # String  || The UID of the imgurl server
-#             "URL"  : "https://www.imgurl.org/api/v2/upload"  # String  || The URL of the imgurl server
-#         }
-#     }
-#
-#     img = "C:\\Users\\haiqu\\Desktop\\test\\photo_2021-06-05_04-50-01.jpg"
-#
-#     aaa = upload_to_imgurl(proxy, s, img)
-#     print("dfsf")
-#     print(aaa)
