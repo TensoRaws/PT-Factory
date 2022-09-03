@@ -27,6 +27,12 @@ Prerequisites for [PT-Factory](https://github.com/Tohrusky/PT-Factory)
 ![pt-factory-sample _2_.png](https://s2.loli.net/2022/08/29/mBCIih9NEFyYzPg.png)
 
 # 使用
+
+## 目前支持的图床编号
+
+- [x] 0 - [SM.MS](https://sm.ms)
+- [x] 1 - [ImgURL](https://www.imgurl.org)
+
 ## 使用前请先在./config.yaml填写配置文件
 ```
 usage: PT-Factory [-h] [-u URL] [-e ENCODE] [-s SOURCE]
