@@ -29,6 +29,7 @@ torrent-settings:
   mk-or-not: true                               # Boolean || Whether to create a torrent file or not
 
 upload-settings:
+  ffmpeg: false                                 # boolean || Use FFmpeg or CV2 to capture
   encode-or-dl: Encode                          # String  || Encode or WEB-DL or Remux
   # String  || The mini-essay 开头的小作文
   mini-essay: '[quote][b][size=3][color=blue]原盘来自U2，感谢原发布者[/color][/size][/b][/quote]

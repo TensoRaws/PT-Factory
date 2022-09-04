@@ -5,6 +5,7 @@ import sys
 import cv2
 import pyperclip
 import yaml
+from time import strftime, gmtime
 from loguru import logger
 from .ptools.ptools import PTools
 
@@ -144,8 +145,12 @@ class PtGenPlus:
         else:
             with open(file_name, "a", encoding="utf-8") as final_info:
                 single_path = self.source_path if self.encode_path == "" else self.encode_path
-                for i2 in self.get_screens_single(single_path):
-                    final_info.write(i2)
+                if not self.upload_settings["ffmpeg"]:
+                    for i2 in self.get_screens_single(single_path):
+                        final_info.write(i2)
+                else:
+                    for i2 in self.get_screens_single_ffmpeg(single_path):
+                        final_info.write(i2)
 
         try:
             with open(file_name, "r", encoding="utf-8") as final_info:
@@ -302,5 +307,53 @@ class PtGenPlus:
 
             split_num_deal -= random_frame
             split_num_deal += split_num
+
+        return pic_list
+
+    @logger.catch
+    def get_screens_single_ffmpeg(self, input_path):
+        single_path = os.path.abspath(input_path)
+
+        cap_single = cv2.VideoCapture(single_path)
+        frames_num_single = int(cap_single.get(7))
+        frames_rate_single = int(cap_single.get(5))  # 帧速率
+
+        duration = frames_num_single / frames_rate_single  # 帧速率/视频总帧数
+
+        n = self.upload_settings["upload-pic-num"]
+        split_time = int(duration / (n + 1))  # 切分块的时间
+        output_dir = os.path.abspath(os.path.join(
+            self.output_stuff, "Single_Pics__" + str(pathlib.PureWindowsPath(single_path)).split("\\")[-1]
+        ))
+        os.makedirs(output_dir, exist_ok=True)
+
+        split_time_deal = split_time
+        pic_list = []
+        pic_time_list = []
+
+        for time in range(n):
+            random_time = random.randint(int(split_time / (-2)), int(split_time / 2))
+            split_time_deal += random_time
+            pic_time_list.append(strftime("%H:%M:%S", gmtime(split_time_deal)))
+            split_time_deal -= random_time
+            split_time_deal += split_time
+        logger.info("待获取的时间：" + str(pic_time_list))
+
+        ffmpeg_config = "ffmpeg -ss \"{}\" -i \"{}\" -vframes 1 \"{}\" "
+
+        for t in pic_time_list:
+            logger.info("截取中，当前为：" + str(t))
+            path_s_or_e = os.path.abspath(os.path.join(
+                output_dir, str(pathlib.PureWindowsPath(single_path)).split("\\")[-1] + "__" +
+                            t.replace(":", "_") + "__V__" + '.jpg'
+            ))
+            ffmpeg_encode = ffmpeg_config.format(t, single_path, path_s_or_e)
+            print(ffmpeg_encode)
+            is_run = os.system(ffmpeg_encode)
+            if is_run != 0:
+                logger.error("Maybe ffmpeg got error, Please check it")
+
+            res_e_s = self.upload_to_pic_hosting(self.proxy_settings, self.pic_hosting_settings, path_s_or_e)
+            pic_list.append(res_e_s + "\n")
 
         return pic_list

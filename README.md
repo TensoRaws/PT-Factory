@@ -19,6 +19,7 @@ Prerequisites for [PT-Factory](https://github.com/Tohrusky/PT-Factory)
 ## Run
 * `git clone https://github.com/Tohrusky/PT-Factory`
 * `pip install -r requirements.txt`
+* [（可选）配置FFmpeg](https://github.com/FFmpeg/FFmpeg)
 
 ## 快速开始
  `python PT-Factory -e "/home/Toaru Kagaku no Railgun T - 01 [BDRip 2160p HEVC-Main10 FLAC].mkv"`
@@ -64,6 +65,7 @@ mediainfo-settings:
 torrent-settings:
   # 是否生成种子，以及种子信息
 upload-settings:
+  # 是否使用FFmpeg来快速截图，使用前请先自行配置环境变量
   # 发布的截图数量，和发布人的一些信息
 upload-logo:
   # 使用额外的logo
