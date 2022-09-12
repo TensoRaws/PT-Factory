@@ -8,6 +8,12 @@
 * 生成精简的Mediainfo
 * 动漫自动匹配bangumi生成信息
 
+# 快速开始
+
+### 无需额外环境， 在 [Github Action](https://github.com/Tohrusky/PT-Factory/actions/workflows/Nightly-Build.yml) 下载 Nightly Build 的对应平台版本
+
+### 或在 [Github Release](https://github.com/Tohrusky/PT-Factory/releases) 下载即可快速使用，命令行参数及配置文件同下
+
 # 准备
 Prerequisites for [PT-Factory](https://github.com/Tohrusky/PT-Factory)
 ## Python > 3.6
@@ -21,7 +27,7 @@ Prerequisites for [PT-Factory](https://github.com/Tohrusky/PT-Factory)
 * `pip install -r requirements.txt`
 * （可选）配置 [FFmpeg-GPL](https://github.com/BtbN/FFmpeg-Builds/releases)
 
-## 快速开始
+## Test
  `python PT-Factory -e "/home/Toaru Kagaku no Railgun T - 01 [BDRip 2160p HEVC-Main10 FLAC].mkv"`
  
 ## 效果
@@ -50,8 +56,7 @@ optional arguments:
 # 注意，特殊字符时添加引号
 ```
 #### ./test.py 提供交互式操作
-### 完成后会复制发布所需BBcode到你的剪贴板
-### 生成的内容，日志，种子在./下的文件夹
+### 完成后会复制发布所需BBcode到你的剪贴板，生成的内容，日志，种子在./下的文件夹
 # config.yaml
 ```
 proxy-settings:                                
