@@ -21,7 +21,7 @@ worker01.encode_path = args.ENCODE if args.ENCODE is not None else ""
 worker01.source_path = args.SOURCE if args.SOURCE is not None else ""
 
 if worker01.bgm_douban_imdb_url == "" and worker01.encode_path == "" and worker01.source_path == "":
-    parser.print_help()
+    parser.print_help(sys.stderr)
     sys.exit(0)
 logger.info(str(PtGenPlus.get_config()))
 worker01.final_info_generate()
