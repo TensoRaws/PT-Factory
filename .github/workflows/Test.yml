@@ -1,13 +1,19 @@
-name: PyInstaller-Cross-Platform-Test
+name: Test
 
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
     branches: [ "main" ]
+    paths-ignore:
+      - '**.md'
+      - 'LICENSE'
     
   pull_request:
     branches: [ "main" ]
+    paths-ignore:
+      - '**.md'
+      - 'LICENSE'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -35,7 +41,6 @@ jobs:
           cd dist
           xcopy config.yaml PT-Factory
           cd PT-Factory
-          Compress-Archive -Path .\* "PT-Factory.zip"
           ./PT-Factory
           
   build-X86-Linux:
@@ -60,7 +65,6 @@ jobs:
         cd dist
         cp config.yaml PT-Factory
         cd PT-Factory
-        zip -r PT-Factory.zip ./
         ./PT-Factory
 
   build-MacOS:
@@ -85,5 +89,4 @@ jobs:
           cd dist
           cp -r config.yaml PT-Factory
           cd PT-Factory
-          zip -r PT-Factory.zip ./
           ./PT-Factory
