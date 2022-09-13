@@ -11,7 +11,7 @@ pic-hosting-settings:
   id: 0                                         # Integer || 选择的图床编号，默认为 0(即第一个图床smms)
   # 0                                  
   smms:
-    APIKEY: 4026589362386ejfgneRjIVRt4          # String  || The APIKEY of the smms server
+    APIKEY: 38opoF4jsghGY3zKQmBGjm745Rjmbaw2    # String  || The APIKEY of the smms server
     URL: https://sm.ms/api/v2/upload            # String  || The URL of the smms server
   # 1
   imgurl:
@@ -22,11 +22,11 @@ pic-hosting-settings:
 mediainfo-settings: 0                           # Integer || 选择的 mediainfo 格式编号，默认为 0(精简)
                                                 # 0-精简 , 1-完整
 torrent-settings:
+  mk-or-not: true                               # Boolean || Whether to create a torrent file or not
   announce-urls: https://srvfi.top/api/announce # String  || The trackers of the torrent server
   # String  || The comment of the torrent
   comment: SRVFI-Raws                           # String  || The comment of the torrent
   created-by: SRVFI-Raws                        # String  || The creator of the torrent
-  mk-or-not: true                               # Boolean || Whether to create a torrent file or not
 
 upload-settings:
   ffmpeg: false                                 # boolean || Use FFmpeg or CV2 to capture
