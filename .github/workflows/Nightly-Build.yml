@@ -31,13 +31,11 @@ jobs:
           cd dist
           xcopy config.yaml PT-Factory
           cd PT-Factory
-          Compress-Archive -Path .\* "PT-Factory.zip"
           ./PT-Factory
       - uses: actions/upload-artifact@v3
         with:
           name: PT-Factory-For-Windows
-          path: dist/PT-Factory/PT-Factory.zip
-          retention-days: 1
+          path: dist/PT-Factory
           
   build-X86-Linux:
     runs-on: ubuntu-latest
@@ -61,13 +59,11 @@ jobs:
         cd dist
         cp config.yaml PT-Factory
         cd PT-Factory
-        zip -r PT-Factory.zip ./
         ./PT-Factory
     - uses: actions/upload-artifact@v3
       with:
         name: PT-Factory-For-X86-Linux
-        path: dist/PT-Factory/PT-Factory.zip
-        retention-days: 1
+        path: dist/PT-Factory
 
   build-MacOS:
     runs-on: macos-latest
@@ -91,10 +87,8 @@ jobs:
           cd dist
           cp -r config.yaml PT-Factory
           cd PT-Factory
-          zip -r PT-Factory.zip ./
           ./PT-Factory
       - uses: actions/upload-artifact@v3
         with:
           name: PT-Factory-For-MacOS
-          path: dist/PT-Factory/PT-Factory.zip
-          retention-days: 1
+          path: dist/PT-Factory
