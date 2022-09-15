@@ -80,6 +80,7 @@ upload-logo:
 * Windows 10
 * Debian 9 X86
 * Debian 10 X86
+* Ubuntu 20.04 LTS X86
 * Ubuntu 20.04 LTS ARM
 * MacOS Big Sur X86
 * MacOS Monterey X86
