@@ -10,6 +10,9 @@
 
 ## 快速开始
 #### 在 [Github Release](https://github.com/Tohrusky/PT-Factory/releases) 下载即可快速使用，命令行参数及配置文件同下
+```shell
+./ptg -e "/home/Toaru Kagaku no Railgun T - 01 [BDRip 2160p HEVC-Main10 FLAC].mkv"
+```
 
 ## 准备
 Prerequisites for [PT-Factory](https://github.com/Tohrusky/PT-Factory)
@@ -25,7 +28,9 @@ Prerequisites for [PT-Factory](https://github.com/Tohrusky/PT-Factory)
 * （可选）配置 [FFmpeg-GPL](https://github.com/BtbN/FFmpeg-Builds/releases)
 
 ## Test
- `python PT-Factory -e "/home/Toaru Kagaku no Railgun T - 01 [BDRip 2160p HEVC-Main10 FLAC].mkv"`
+ ```shell
+ python PT-Factory -e "/home/Toaru Kagaku no Railgun T - 01 [BDRip 2160p HEVC-Main10 FLAC].mkv"
+ ```
  
 ## 效果
 ![pt-factory-sample _2_.png](https://s2.loli.net/2022/08/29/mBCIih9NEFyYzPg.png)
@@ -38,7 +43,7 @@ Prerequisites for [PT-Factory](https://github.com/Tohrusky/PT-Factory)
 - [x] 1 - [ImgURL](https://www.imgurl.org)
 
 ### 使用前请先在./config.yaml填写配置文件
-```
+```shell
 usage: PT-Factory [-h] [-u URL] [-e ENCODE] [-s SOURCE]
 
 如果不需要对比图，仅填写-e或-s参数即可 || 对于二次元番剧电影，可尝试不指定-u参数直接搜索
@@ -52,10 +57,9 @@ optional arguments:
                         Source资源路径
 # 注意，特殊字符时添加引号
 ```
-#### ./test.py 提供交互式操作
 #### 完成后会复制发布所需BBcode到你的剪贴板，生成的内容，日志，种子在./下的文件夹
 ## config.yaml
-```
+```shell
 proxy-settings:                                
   # socks5 proxy, 使用前请先配置好socks5代理, 使用时会检测其是否有效，未生效时等同false
 pt-gen: 
@@ -81,6 +85,9 @@ upload-logo:
 * Ubuntu 20.04 LTS ARM
 * MacOS Big Sur X86
 * MacOS Monterey X86
+* MacOS Ventura X86
+* MacOS Monterey ARM
+* MacOS Ventura ARM
 
 ## ToDo
 

@@ -1,0 +1,13 @@
+/build
+
+/dist
+
+/generate_stuff
+
+/logs
+
+/.idea
+
+/__main__.spec
+
+/ptf.spec

@@ -1,0 +1,89 @@
+name: Release
+
+# Controls when the workflow will run
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  Build:
+    strategy:
+      matrix:
+        python-version: ["3.10"]
+        os-version: [ "macos-latest", "windows-latest", "ubuntu-20.04" ]
+
+    runs-on: ${{ matrix.os-version }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: x64
+
+      - name: Build
+        run: |
+          pip install -r requirements.txt
+          pip install pyinstaller
+          python -m PyInstaller -F -n ptf -i assets/favicon.ico __main__.py
+
+      - name: cp-windows
+        if: matrix.os-version == 'windows-latest'
+        run: |
+          xcopy config.yaml dist
+
+      - name: cp-unix
+        if: matrix.os-version != 'windows-latest'
+        run: |
+          cp config.yaml dist
+
+      - name: upload
+        uses: actions/upload-artifact@v3
+        with:
+          name: ptg-${{ matrix.os-version }}
+          path: dist
+
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      DATE: ${{ steps.get_date.outputs.DATE }}
+    steps:
+      - name: Get current date
+        id: get_date
+        run: echo "DATE=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+  Release:
+    needs: [Build, setup]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          path: asset
+
+      - name: dist
+        run: |
+          mkdir dist
+          cd asset && ls
+          cd ptg-macos-latest
+          zip -r PT-Factory-x86-MacOS.zip ./*
+          cp PT-Factory-x86-MacOS.zip ../../dist
+          cd ../ptg-ubuntu-20.04
+          zip -r PT-Factory-x86-Linux.zip ./*
+          cp PT-Factory-x86-Linux.zip ../../dist
+          cd ../ptg-windows-latest
+          zip -r PT-Factory-x86-Windows.zip ./*
+          cp PT-Factory-x86-Windows.zip ../../dist
+          cd ../../dist
+          ls
+
+      - name: Create Release and Upload Release Asset
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release ${{ needs.setup.outputs.DATE }}
+          tag_name: ${{ needs.setup.outputs.DATE }}
+          body: Auto Release.
+          draft: false
+          prerelease: false
+          files: dist/*

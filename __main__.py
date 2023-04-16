@@ -1,13 +1,21 @@
 import argparse
 import os
+import pathlib
 import sys
 from loguru import logger
-from ptgenplus.ptgenplus import PtGenPlus
+from src.ptgenplus import PtGenPlus
 
-logger.add(os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + "/logs/log-{time}.log"),
-           encoding="utf-8")
+# python -m PyInstaller -F -n ptf -i assets/favicon.icon __main__.py
+if getattr(sys, 'frozen', False):
+    # frozen
+    projectPATH = pathlib.Path(os.path.abspath(os.path.dirname(sys.executable)))
+else:
+    # unfrozen
+    projectPATH = pathlib.Path(os.path.abspath(os.path.dirname(os.path.realpath(__file__))))
 
-worker01 = PtGenPlus.create()
+logger.add(projectPATH / "logs/log-{time}.log", encoding="utf-8")
+
+worker01 = PtGenPlus()
 
 parser = argparse.ArgumentParser()
 parser.description = "如果不需要对比图，仅填写-e或-s参数即可  ||  对于二次元番剧电影，可尝试不指定-u参数直接搜索"
@@ -23,5 +31,8 @@ worker01.source_path = args.SOURCE if args.SOURCE is not None else ""
 if worker01.bgm_douban_imdb_url == "" and worker01.encode_path == "" and worker01.source_path == "":
     parser.print_help(sys.stderr)
     sys.exit(0)
-logger.info(str(PtGenPlus.get_config()))
+
+worker01.create(str(projectPATH))
+
+logger.info(str(worker01.get_config()))
 worker01.final_info_generate()
