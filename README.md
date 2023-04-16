@@ -1,4 +1,4 @@
-# PT-Factory
+<h1 align="center">PT-Factory</h1>
 一个可以自动获得PTGen信息，精简版MediaInfo，重编码前后对比截图并自动上传图床，生成发布所需BBode的PT快速发种工具
 
 
