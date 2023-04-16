@@ -9,7 +9,7 @@ jobs:
   Build:
     strategy:
       matrix:
-        python-version: ["3.10"]
+        python-version: [ "3.10" ]
         os-version: [ "macos-latest", "windows-latest", "ubuntu-20.04" ]
 
     runs-on: ${{ matrix.os-version }}
@@ -29,21 +29,48 @@ jobs:
           pip install pyinstaller
           python -m PyInstaller -F -n ptf -i assets/favicon.ico __main__.py
 
-      - name: cp-windows
+      - name: windows
         if: matrix.os-version == 'windows-latest'
         run: |
           xcopy config.yaml dist
+          cd dist
+          7z a -r PT-Factory-x86-Windows.zip ./*
 
-      - name: cp-unix
-        if: matrix.os-version != 'windows-latest'
-        run: |
-          cp config.yaml dist
-
-      - name: upload
+      - name: upload-windows
+        if: matrix.os-version == 'windows-latest'
         uses: actions/upload-artifact@v3
         with:
-          name: ptg-${{ matrix.os-version }}
-          path: dist
+          name: PT-Factory-x86-Windows
+          path: dist/PT-Factory-x86-Windows.zip
+
+      - name: macos
+        if: matrix.os-version == 'macos-latest'
+        run: |
+          cp config.yaml dist
+          cd dist
+          zip -9 -r PT-Factory-x86-MacOS.zip ./*
+
+      - name: upload-macos
+        if: matrix.os-version == 'macos-latest'
+        uses: actions/upload-artifact@v3
+        with:
+          name: PT-Factory-x86-MacOS
+          path: dist/PT-Factory-x86-MacOS.zip
+
+      - name: linux
+        if: matrix.os-version == 'ubuntu-20.04'
+        run: |
+          cp config.yaml dist
+          cd dist
+          zip -9 -r PT-Factory-x86-Linux.zip ./*
+
+      - name: upload-linux
+        if: matrix.os-version == 'ubuntu-20.04'
+        uses: actions/upload-artifact@v3
+        with:
+          name: PT-Factory-x86-Linux
+          path: dist/PT-Factory-x86-Linux.zip
+
 
   setup:
     runs-on: ubuntu-latest
@@ -55,28 +82,24 @@ jobs:
         run: echo "DATE=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
 
   Release:
-    needs: [Build, setup]
+    needs: [ Build, setup ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v3
         with:
-          path: asset
+          path: assets
+
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: assets
 
       - name: dist
         run: |
           mkdir dist
-          cd asset && ls
-          cd ptg-macos-latest
-          zip -r PT-Factory-x86-MacOS.zip ./*
-          cp PT-Factory-x86-MacOS.zip ../../dist
-          cd ../ptg-ubuntu-20.04
-          zip -r PT-Factory-x86-Linux.zip ./*
-          cp PT-Factory-x86-Linux.zip ../../dist
-          cd ../ptg-windows-latest
-          zip -r PT-Factory-x86-Windows.zip ./*
-          cp PT-Factory-x86-Windows.zip ../../dist
-          cd ../../dist
-          ls
+          mv assets/PT-Factory-x86-Windows/PT-Factory-x86-Windows.zip dist
+          mv assets/PT-Factory-x86-MacOS/PT-Factory-x86-MacOS.zip dist
+          mv assets/PT-Factory-x86-Linux/PT-Factory-x86-Linux.zip dist
+
 
       - name: Create Release and Upload Release Asset
         uses: softprops/action-gh-release@v1
