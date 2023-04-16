@@ -65,17 +65,21 @@ jobs:
         if: matrix.os-version == 'windows-latest'
         run: |
           xcopy config.yaml dist
+          cd dist
+          7z a -r ptf-${{ matrix.os-version }}.zip ./*
 
       - name: cp-unix
         if: matrix.os-version != 'windows-latest'
         run: |
           cp config.yaml dist
+          cd dist
+          zip -9 -r ptf-${{ matrix.os-version }}.zip ./*
 
       - name: upload
         uses: actions/upload-artifact@v3
         with:
-          name: ptg-${{ matrix.os-version }}
-          path: dist
+          name: ptf-${{ matrix.os-version }}
+          path: dist/ptf-${{ matrix.os-version }}.zip
 
       - name: Test
         run: |
