@@ -16,18 +16,21 @@
 
 ## 准备
 Prerequisites for [PT-Factory](https://github.com/Tohrusky/PT-Factory)
-## Python > 3.6
 
-#### Linux玩家可能需要
-`apt install libmediainfo-dev`
-`apt install libgl1-mesa-glx`
+**Linux玩家** 可能需要
 
-## Run
-* `git clone https://github.com/Tohrusky/PT-Factory`
-* `pip install -r requirements.txt`
+```bash
+apt install libmediainfo-dev
+apt install libgl1-mesa-glx
+```
+**Python > 3.6**
+```
+git clone https://github.com/Tohrusky/PT-Factory
+pip install -r requirements.txt
+```
 * （可选）配置 [FFmpeg-GPL](https://github.com/BtbN/FFmpeg-Builds/releases)
 
-## Test
+## Run
  ```shell
  python PT-Factory -e "/home/Toaru Kagaku no Railgun T - 01 [BDRip 2160p HEVC-Main10 FLAC].mkv"
  ```
@@ -35,14 +38,14 @@ Prerequisites for [PT-Factory](https://github.com/Tohrusky/PT-Factory)
 ## 效果
 ![pt-factory-sample _2_.png](https://s2.loli.net/2022/08/29/mBCIih9NEFyYzPg.png)
 
-## 使用
+## 配置
 
-### 目前支持的图床编号
+### 支持的图床
 
 - [x] 0 - [SM.MS](https://sm.ms)
 - [x] 1 - [ImgURL](https://www.imgurl.org)
 
-### 使用前请先在./config.yaml填写配置文件
+使用前请先在./config.yaml填写配置文件
 ```shell
 usage: PT-Factory [-h] [-u URL] [-e ENCODE] [-s SOURCE]
 
@@ -57,8 +60,8 @@ optional arguments:
                         Source资源路径
 # 注意，特殊字符时添加引号
 ```
-#### 完成后会复制发布所需BBcode到你的剪贴板，生成的内容，日志，种子在./下的文件夹
-## config.yaml
+*完成后会复制发布所需BBcode到你的剪贴板，生成的内容，日志，种子在./下的文件夹*
+### config.yaml
 ```shell
 proxy-settings:                                
   # socks5 proxy, 使用前请先配置好socks5代理, 使用时会检测其是否有效，未生效时等同false
@@ -94,7 +97,7 @@ upload-logo:
 - [ ] 更多的图床支持
 - [ ] 更多的 Mediainfo 格式
 
-# Reference
+## Reference
 
-## [pt-gen](https://github.com/Rhilip/pt-gen-cfworker)
-## [SRVFI-Raws](https://srvfi.top)
+### [pt-gen](https://github.com/Rhilip/pt-gen-cfworker)
+### [SRVFI-Raws](https://srvfi.top)
