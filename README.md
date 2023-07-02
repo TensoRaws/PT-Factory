@@ -9,13 +9,13 @@
 * 动漫自动匹配bangumi生成信息
 
 ## 快速开始
-#### 在 [Github Release](https://github.com/Tohrusky/PT-Factory/releases) 下载即可快速使用，命令行参数及配置文件同下
+#### 在 [Github Release](https://github.com/SRVFI-Raws/PT-Factory/releases) 下载即可快速使用，命令行参数及配置文件同下
 ```shell
 ./ptf -e "/home/Toaru Kagaku no Railgun T - 01 [BDRip 2160p HEVC-Main10 FLAC].mkv"
 ```
 
 ## 准备
-Prerequisites for [PT-Factory](https://github.com/Tohrusky/PT-Factory)
+Prerequisites for [PT-Factory](https://github.com/SRVFI-Raws/PT-Factory)
 
 **Linux玩家** 可能需要
 
