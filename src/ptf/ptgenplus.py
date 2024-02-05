@@ -2,28 +2,32 @@ import os
 import pathlib
 import random
 import sys
+from time import gmtime, strftime
+from typing import Any, List
+
 import cv2
 import pyperclip
 import yaml
-from time import strftime, gmtime
 from loguru import logger
-from src.ptools import PTools
+
+from ptf.ptools import PTools
 
 
 class PtGenPlus:
-    def __init__(self,
-                 project_path: str = "",
-                 bgm_douban_imdb_url: str = "",
-                 source_path: str = "",
-                 encode_path: str = "",
-                 proxy_settings=None,
-                 pt_gen=None,
-                 pic_hosting_settings=None,
-                 torrent_settings=None,
-                 upload_settings=None,
-                 upload_logo=None,
-                 mediainfo_settings=None,
-                 ):
+    def __init__(
+        self,
+        project_path: str = "",
+        bgm_douban_imdb_url: str = "",
+        source_path: str = "",
+        encode_path: str = "",
+        proxy_settings: Any = None,
+        pt_gen: Any = None,
+        pic_hosting_settings: Any = None,
+        torrent_settings: Any = None,
+        upload_settings: Any = None,
+        upload_logo: Any = None,
+        mediainfo_settings: Any = None,
+    ) -> None:
         self.project_path = project_path  # 项目路径
         self.bgm_douban_imdb_url = bgm_douban_imdb_url  # bgm，豆瓣，imdb详细url
         self.encode_path = encode_path  # Encode视频地址
@@ -47,20 +51,20 @@ class PtGenPlus:
             file_path = config_path
 
         try:
-            with open(file_path, 'r', encoding="utf-8") as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 config = yaml.load(f, Loader=yaml.FullLoader)
         except Exception as e:
             logger.error("Load config error: {}".format(e))
             sys.exit(1)
 
         return {
-            "proxy-settings"      : config["proxy-settings"],
-            "pt-gen"              : config["pt-gen"],
+            "proxy-settings": config["proxy-settings"],
+            "pt-gen": config["pt-gen"],
             "pic-hosting-settings": config["pic-hosting-settings"],
-            "torrent-settings"    : config["torrent-settings"],
-            "upload-settings"     : config["upload-settings"],
-            "upload-logo"         : config["upload-logo"],
-            "mediainfo-settings"  : config["mediainfo-settings"],
+            "torrent-settings": config["torrent-settings"],
+            "upload-settings": config["upload-settings"],
+            "upload-logo": config["upload-logo"],
+            "mediainfo-settings": config["mediainfo-settings"],
         }
 
     @logger.catch
@@ -98,17 +102,14 @@ class PtGenPlus:
         self.mediainfo_settings = config["mediainfo-settings"]
 
     @logger.catch
-    def final_info_generate(self):
+    def final_info_generate(self) -> None:
         if self.encode_path != "":
             file_name = str(pathlib.PureWindowsPath(self.encode_path)).split("\\")[-1]
         else:
             file_name = str(pathlib.PureWindowsPath(self.source_path)).split("\\")[-1]
         file_name += "__final_info.txt"
-        
-        os.makedirs(
-            os.path.join(self.project_path, "generate_stuff"),
-            exist_ok=True
-        )
+
+        os.makedirs(os.path.join(self.project_path, "generate_stuff"), exist_ok=True)
 
         self.output_stuff = os.path.join(self.project_path, "generate_stuff")
 
@@ -121,8 +122,15 @@ class PtGenPlus:
         with open(file_name, "w", encoding="utf-8") as final_info:
             final_info.write(self.upload_settings["mini-essay"] + "\n")
             pt_gen_path = self.encode_path if self.encode_path != "" else self.source_path
-            final_info.write(self.get_pt_gen_info(self.bgm_douban_imdb_url, self.proxy_settings, self.pt_gen["URL"],
-                                                  self.pt_gen["APIKEY"], pt_gen_path))
+            final_info.write(
+                self.get_pt_gen_info(
+                    self.bgm_douban_imdb_url,
+                    self.proxy_settings,
+                    self.pt_gen["URL"],
+                    self.pt_gen["APIKEY"],
+                    pt_gen_path,
+                )
+            )
 
         with open(file_name, "a", encoding="utf-8") as final_info:
             input_path = self.encode_path if self.encode_path != "" else self.source_path
@@ -140,7 +148,7 @@ class PtGenPlus:
             # 固定内容
             if logo["flag"]:
                 final_info.write(logo["logo2"] + "\n")
-            final_info.write('[b] right click on the image and open it in a new tab to see the full-size one [/b]\n')
+            final_info.write("[b] right click on the image and open it in a new tab to see the full-size one [/b]\n")
 
         if self.encode_path != "" and self.source_path != "":
             with open(file_name, "a", encoding="utf-8") as final_info:
@@ -183,7 +191,9 @@ class PtGenPlus:
 
     @staticmethod
     @logger.catch
-    def get_pt_gen_info(bgm_douban_imdb_url, proxy_settings, pt_gen_url, pt_gen_apikey, path):
+    def get_pt_gen_info(
+        bgm_douban_imdb_url: str, proxy_settings: dict, pt_gen_url: str, pt_gen_apikey: str, path: str
+    ) -> str:
         if bgm_douban_imdb_url == "":
             title = PTools.search_anidb(proxy_settings, path)
             bgm_douban_imdb_url = PTools.search_bgm(title, proxy_settings)
@@ -191,32 +201,38 @@ class PtGenPlus:
         return PTools.get_pt_gen_info(bgm_douban_imdb_url, proxy_settings, pt_gen_url, pt_gen_apikey)
 
     @logger.catch
-    def get_media_info(self, input_path):
-        return PTools.get_media_info(self.mediainfo_settings, input_path, self.upload_settings["encode-or-dl"],
-                                     self.upload_settings["uploader-name"])
+    def get_media_info(self, input_path: str) -> List[str]:
+        return PTools.get_media_info(
+            self.mediainfo_settings,
+            input_path,
+            self.upload_settings["encode-or-dl"],
+            self.upload_settings["uploader-name"],
+        )
 
     @staticmethod
     @logger.catch
-    def upload_to_pic_hosting(proxy_settings, pic_hosting_settings, image_path):
+    def upload_to_pic_hosting(proxy_settings: dict, pic_hosting_settings: dict, image_path: str) -> str:
         return PTools.upload_to_pic_hosting(proxy_settings, pic_hosting_settings, image_path)
 
     @logger.catch
-    def get_screens(self):
+    def get_screens(self) -> List[str]:
         cap_1 = cv2.VideoCapture(os.path.abspath(self.source_path))
         cap_2 = cv2.VideoCapture(os.path.abspath(self.encode_path))
         frames_num_1 = int(cap_1.get(7))
         frames_num_2 = int(cap_2.get(7))
         if frames_num_1 != frames_num_2:
             logger.warning("视频可能有问题，帧数相差" + str(frames_num_1 - frames_num_2))
-            logger.warning('Source视频总帧数：' + str(frames_num_1))
-            logger.warning('Encode视频总帧数：' + str(frames_num_2))
+            logger.warning("Source视频总帧数：" + str(frames_num_1))
+            logger.warning("Encode视频总帧数：" + str(frames_num_2))
         # 这是按间隔取帧的参数，例如这里是5的话会把视频按时间轴从头到尾分为6段，去掉头段，取中间五段中的每段第一帧的前后的某个随机帧
         n = self.upload_settings["upload-pic-num"]
         frames_num_min = min(frames_num_1, frames_num_2)
         split_num = int(frames_num_min / (n + 1))  # 切分块的帧数
-        output_dir = os.path.abspath(os.path.join(
-            self.output_stuff, "Compare_Pics__" + str(pathlib.PureWindowsPath(self.encode_path)).split("\\")[-1]
-        ))
+        output_dir = os.path.abspath(
+            os.path.join(
+                self.output_stuff, "Compare_Pics__" + str(pathlib.PureWindowsPath(self.encode_path)).split("\\")[-1]
+            )
+        )
         os.makedirs(output_dir, exist_ok=True)
 
         split_num_deal = split_num
@@ -242,22 +258,34 @@ class PtGenPlus:
                 logger.error(e)
                 logger.error("CV2读取失败")
                 sys.exit(1)
-            path_s = os.path.abspath(os.path.join(
-                output_dir, str(pathlib.PureWindowsPath(self.encode_path)).split("\\")[-1] + "__" +
-                            str(split_num_deal) + '_source_' + '.jpg'
-            ))
-            path_e = os.path.abspath(os.path.join(
-                output_dir, str(pathlib.PureWindowsPath(self.encode_path)).split("\\")[-1] + "__" +
-                            str(split_num_deal) + '_encode_' + '.jpg'
-            ))
+            path_s = os.path.abspath(
+                os.path.join(
+                    output_dir,
+                    str(pathlib.PureWindowsPath(self.encode_path)).split("\\")[-1]
+                    + "__"
+                    + str(split_num_deal)
+                    + "_source_"
+                    + ".jpg",
+                )
+            )
+            path_e = os.path.abspath(
+                os.path.join(
+                    output_dir,
+                    str(pathlib.PureWindowsPath(self.encode_path)).split("\\")[-1]
+                    + "__"
+                    + str(split_num_deal)
+                    + "_encode_"
+                    + ".jpg",
+                )
+            )
 
-            cv2.imencode('.jpg', s_1)[1].tofile(path_s)
+            cv2.imencode(".jpg", s_1)[1].tofile(path_s)
 
             res_s = self.upload_to_pic_hosting(self.proxy_settings, self.pic_hosting_settings, path_s)
 
             pic_list.append(res_s + " ")
 
-            cv2.imencode('.jpg', e_1)[1].tofile(path_e)
+            cv2.imencode(".jpg", e_1)[1].tofile(path_e)
 
             res_e = self.upload_to_pic_hosting(self.proxy_settings, self.pic_hosting_settings, path_e)
 
@@ -269,7 +297,7 @@ class PtGenPlus:
         return pic_list
 
     @logger.catch
-    def get_screens_single(self, input_path):
+    def get_screens_single(self, input_path: str) -> List[str]:
         single_path = os.path.abspath(input_path)
 
         cap_single = cv2.VideoCapture(single_path)
@@ -277,9 +305,9 @@ class PtGenPlus:
         # 这是按间隔取帧的参数，例如这里是5的话会把视频按时间轴从头到尾分为6段，去掉头段，取中间五段中的每段第一帧的前后的某个随机帧
         n = self.upload_settings["upload-pic-num"]
         split_num = int(frames_num_single / (n + 1))  # 切分块的帧数
-        output_dir = os.path.abspath(os.path.join(
-            self.output_stuff, "Single_Pics__" + str(pathlib.PureWindowsPath(single_path)).split("\\")[-1]
-        ))
+        output_dir = os.path.abspath(
+            os.path.join(self.output_stuff, "Single_Pics__" + str(pathlib.PureWindowsPath(single_path)).split("\\")[-1])
+        )
         os.makedirs(output_dir, exist_ok=True)
 
         split_num_deal = split_num
@@ -298,12 +326,18 @@ class PtGenPlus:
                 logger.error(e)
                 logger.error("CV2读取失败")
                 sys.exit(1)
-            path_s_or_e = os.path.abspath(os.path.join(
-                output_dir, str(pathlib.PureWindowsPath(single_path)).split("\\")[-1] + "__" +
-                            str(split_num_deal) + "__V__" + '.jpg'
-            ))
+            path_s_or_e = os.path.abspath(
+                os.path.join(
+                    output_dir,
+                    str(pathlib.PureWindowsPath(single_path)).split("\\")[-1]
+                    + "__"
+                    + str(split_num_deal)
+                    + "__V__"
+                    + ".jpg",
+                )
+            )
 
-            cv2.imencode('.jpg', e_s_1)[1].tofile(path_s_or_e)
+            cv2.imencode(".jpg", e_s_1)[1].tofile(path_s_or_e)
 
             res_e_s = self.upload_to_pic_hosting(self.proxy_settings, self.pic_hosting_settings, path_s_or_e)
 
@@ -315,7 +349,7 @@ class PtGenPlus:
         return pic_list
 
     @logger.catch
-    def get_screens_single_ffmpeg(self, input_path):
+    def get_screens_single_ffmpeg(self, input_path: str) -> List[str]:
         single_path = os.path.abspath(input_path)
 
         cap_single = cv2.VideoCapture(single_path)
@@ -326,16 +360,16 @@ class PtGenPlus:
 
         n = self.upload_settings["upload-pic-num"]
         split_time = int(duration / (n + 1))  # 切分块的时间
-        output_dir = os.path.abspath(os.path.join(
-            self.output_stuff, "Single_Pics__" + str(pathlib.PureWindowsPath(single_path)).split("\\")[-1]
-        ))
+        output_dir = os.path.abspath(
+            os.path.join(self.output_stuff, "Single_Pics__" + str(pathlib.PureWindowsPath(single_path)).split("\\")[-1])
+        )
         os.makedirs(output_dir, exist_ok=True)
 
         split_time_deal = split_time
         pic_list = []
         pic_time_list = []
 
-        for time in range(n):
+        for _ in range(n):
             random_time = random.randint(int(split_time / (-2)), int(split_time / 2))
             split_time_deal += random_time
             pic_time_list.append(strftime("%H:%M:%S", gmtime(split_time_deal)))
@@ -343,14 +377,20 @@ class PtGenPlus:
             split_time_deal += split_time
         logger.info("待获取的时间：" + str(pic_time_list))
 
-        ffmpeg_config = "ffmpeg -ss \"{}\" -i \"{}\" -vframes 1 \"{}\" "
+        ffmpeg_config = 'ffmpeg -ss "{}" -i "{}" -vframes 1 "{}" '
 
         for t in pic_time_list:
             logger.info("截取中，当前为：" + str(t))
-            path_s_or_e = os.path.abspath(os.path.join(
-                output_dir, str(pathlib.PureWindowsPath(single_path)).split("\\")[-1] + "__" +
-                            t.replace(":", "_") + "__V__" + '.jpg'
-            ))
+            path_s_or_e = os.path.abspath(
+                os.path.join(
+                    output_dir,
+                    str(pathlib.PureWindowsPath(single_path)).split("\\")[-1]
+                    + "__"
+                    + t.replace(":", "_")
+                    + "__V__"
+                    + ".jpg",
+                )
+            )
             ffmpeg_encode = ffmpeg_config.format(t, single_path, path_s_or_e)
             print(ffmpeg_encode)
             is_run = os.system(ffmpeg_encode)

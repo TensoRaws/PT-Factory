@@ -2,13 +2,16 @@ import os
 import pathlib
 import string
 import sys
+from typing import List
+
 import requests
 from loguru import logger
-from tenacity import retry, wait_random, stop_after_delay, stop_after_attempt
-from torrentool.torrent import Torrent
-from src.imagehosting import upload_to_smms, upload_to_imgurl
-from src.mediainfo import get_media_info_0, get_media_info_1
 from lxml import etree
+from tenacity import retry, stop_after_attempt, stop_after_delay, wait_random
+from torrentool.torrent import Torrent
+
+from ptf.imagehosting import upload_to_imgurl, upload_to_smms
+from ptf.mediainfo import get_media_info_0, get_media_info_1
 
 
 class PTools:
@@ -19,10 +22,7 @@ class PTools:
             logger.info("Not using proxy")
             return False
         try:
-            proxies = {
-                "http": "socks5://" + proxy["ip_port"],
-                "https": "socks5://" + proxy["ip_port"]
-            }
+            proxies = {"http": "socks5://" + proxy["ip_port"], "https": "socks5://" + proxy["ip_port"]}
             requests.get("https://www.google.com", proxies=proxies)
             logger.info("Proxy check success, using proxy")
             return True
@@ -36,18 +36,12 @@ class PTools:
     @retry(wait=wait_random(min=2, max=4), stop=stop_after_delay(30) | stop_after_attempt(10))
     def get_pt_gen_info(bgm_douban_imdb_url: str, proxy: dict, pt_gen_url: str, pt_gen_api: str) -> str:
         if proxy["switch"]:
-            pt_gen_proxy = {
-                "http": "socks5://" + proxy["ip_port"],
-                "https": "socks5://" + proxy["ip_port"]
-            }
+            pt_gen_proxy = {"http": "socks5://" + proxy["ip_port"], "https": "socks5://" + proxy["ip_port"]}
         else:
             pt_gen_proxy = None
 
         logger.info("正在获取ptgen信息...")
-        dict_pt_gen_params = {
-            "url": bgm_douban_imdb_url,
-            "apikey": pt_gen_api
-        }
+        dict_pt_gen_params = {"url": bgm_douban_imdb_url, "apikey": pt_gen_api}
 
         logger.info("ptgen params: {}".format(dict_pt_gen_params))
         try:
@@ -67,10 +61,7 @@ class PTools:
     @retry(wait=wait_random(min=2, max=4), stop=stop_after_delay(30) | stop_after_attempt(10))
     def search_bgm(title: str, proxy: dict) -> str:
         if proxy["switch"]:
-            search_bgm_proxy = {
-                "http": "socks5://" + proxy["ip_port"],
-                "https": "socks5://" + proxy["ip_port"]
-            }
+            search_bgm_proxy = {"http": "socks5://" + proxy["ip_port"], "https": "socks5://" + proxy["ip_port"]}
         else:
             search_bgm_proxy = None
 
@@ -78,11 +69,9 @@ class PTools:
         url = "https://bgm.tv/subject_search/" + title
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
-                          "Chrome/80.0.3987.149 Safari/537.36"
+            "Chrome/80.0.3987.149 Safari/537.36"
         }
-        p = {
-            "cat": 2
-        }
+        p = {"cat": 2}
 
         try:
             req_res = requests.get(url=url, params=p, proxies=search_bgm_proxy, headers=headers).text
@@ -92,8 +81,7 @@ class PTools:
             raise e
 
         try:
-            res = etree.HTML(req_res).xpath(
-                '//*[@id="browserItemList"]//li[contains(@id, "item")][1]/a/@href')[0]
+            res = etree.HTML(req_res).xpath('//*[@id="browserItemList"]//li[contains(@id, "item")][1]/a/@href')[0]
         except Exception as e:
             logger.warning(e)
             logger.warning("未查询到bgm信息，请手动输入")
@@ -116,23 +104,17 @@ class PTools:
 
         logger.info("搜索Anidb中...动画名为" + path)
         if proxy["switch"]:
-            get_bangmumi_url_proxy = {
-                "http": "socks5://" + proxy["ip_port"],
-                "https": "socks5://" + proxy["ip_port"]
-            }
+            get_bangmumi_url_proxy = {"http": "socks5://" + proxy["ip_port"], "https": "socks5://" + proxy["ip_port"]}
         else:
             get_bangmumi_url_proxy = None
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
-                          "Chrome/80.0.3987.149 Safari/537.36"
+            "Chrome/80.0.3987.149 Safari/537.36"
         }
-        p = {
-            "adb.search": path,
-            "do.search": 1
-        }
+        p = {"adb.search": path, "do.search": 1}
         url = "https://anidb.net/search/anime/"
         try:
-            req_title_url = requests.get(url=url, params=p, headers=headers, proxies=get_bangmumi_url_proxy).text
+            req_title_url = requests.get(url=url, params=p, headers=headers, proxies=get_bangmumi_url_proxy).text  # type: ignore
         except Exception as e:
             logger.warning(e)
             logger.warning("网络请求失败，重试中")
@@ -141,7 +123,8 @@ class PTools:
         title_url = ""
         try:
             title_url = etree.HTML(req_title_url).xpath(
-                '//*[@id="layout-main"]/div[1]/div[2]/table/tbody/tr[1]/td[4]/a/@href')[0]
+                '//*[@id="layout-main"]/div[1]/div[2]/table/tbody/tr[1]/td[4]/a/@href'
+            )[0]
         except Exception as e:
             logger.warning(e)
             logger.info("未查询到ANIDB结果")
@@ -158,18 +141,21 @@ class PTools:
         # 优先使用日语标题
         try:
             title_name = etree.HTML(req_title_name).xpath(
-                '//*[@id="tab_1_pane"]/div/table/tbody/tr[3]/td/label/text()')[0]
+                '//*[@id="tab_1_pane"]/div/table/tbody/tr[3]/td/label/text()'
+            )[0]
         except Exception as e:
             logger.warning(e)
             logger.warning("标题#3不存在，尝试获取标题#2")
             try:
                 title_name = etree.HTML(req_title_name).xpath(
-                    '//*[@id="tab_1_pane"]/div/table/tbody/tr[2]/td/label/text()')[0]
+                    '//*[@id="tab_1_pane"]/div/table/tbody/tr[2]/td/label/text()'
+                )[0]
             except Exception as e:
                 logger.warning(e)
                 logger.warning("标题#2不存在，尝试获取主标题")
                 title_name = etree.HTML(req_title_name).xpath(
-                    '//*[@id="tab_1_pane"]/div/table/tbody/tr[1]/td/span/text()')[0]
+                    '//*[@id="tab_1_pane"]/div/table/tbody/tr[1]/td/span/text()'
+                )[0]
         # 清洗特殊符号
         for item in title_name:
             if item in string.punctuation:
@@ -180,28 +166,22 @@ class PTools:
 
     @staticmethod
     @logger.catch
-    def get_media_info(mediainfo_settings: int, file_path: str, encode_or_dl: str, uploader_name: str) -> list:
-        choose_media_info = {
-            0: lambda a, b, c: get_media_info_0(a, b, c),
-            1: lambda a, b, c: get_media_info_1(a, b, c)
-        }
+    def get_media_info(mediainfo_settings: int, file_path: str, encode_or_dl: str, uploader_name: str) -> List[str]:
+        choose_media_info = {0: lambda a, b, c: get_media_info_0(a, b, c), 1: lambda a, b, c: get_media_info_1(a, b, c)}
 
-        return choose_media_info[mediainfo_settings](file_path, encode_or_dl, uploader_name)
+        return choose_media_info[mediainfo_settings](file_path, encode_or_dl, uploader_name)  # type: ignore
 
     # 返回图床BBcode
     @staticmethod
     @logger.catch
     def upload_to_pic_hosting(proxy: dict, pic_hosting_settings: dict, image_path: str) -> str:
-        choose_pic_hosting = {
-            0: lambda a, b, c: upload_to_smms(a, b, c),
-            1: lambda a, b, c: upload_to_imgurl(a, b, c)
-        }
+        choose_pic_hosting = {0: lambda a, b, c: upload_to_smms(a, b, c), 1: lambda a, b, c: upload_to_imgurl(a, b, c)}
 
-        return choose_pic_hosting[pic_hosting_settings["id"]](proxy, pic_hosting_settings, image_path)
+        return choose_pic_hosting[pic_hosting_settings["id"]](proxy, pic_hosting_settings, image_path)  # type: ignore
 
     @staticmethod
     @logger.catch
-    def get_torrent(output_path: str, mktorrent_path: str, config: dict):
+    def get_torrent(output_path: str, mktorrent_path: str, config: dict) -> None:
         try:
             torrent_config = config
             logger.info("获取torrent配置文件成功")
@@ -209,9 +189,9 @@ class PTools:
             logger.error(e)
             logger.error("获取torrent配置文件失败，请检查配置文件是否正确")
             sys.exit(1)
-        output_path = os.path.abspath(os.path.join(
-            output_path, str(pathlib.PureWindowsPath(mktorrent_path)).split("\\")[-1] + ".torrent"
-        ))
+        output_path = os.path.abspath(
+            os.path.join(output_path, str(pathlib.PureWindowsPath(mktorrent_path)).split("\\")[-1] + ".torrent")
+        )
 
         logger.info("输出路径：" + output_path)
 

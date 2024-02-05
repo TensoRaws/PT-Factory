@@ -2,24 +2,22 @@ import json
 import os
 import pathlib
 import time
+from typing import List
+
 import pymediainfo
 from loguru import logger
 
 
 @logger.catch
-def get_media_info(input_path: str, encode_or_dl: str, uploader_name: str) -> list:
+def get_media_info(input_path: str, encode_or_dl: str, uploader_name: str) -> List[str]:
     logger.info("生成Mediainfo-mini中...: {}".format(input_path))
     write_info_list = []
     write_path = os.path.abspath(input_path)
     encode_media_info = pymediainfo.MediaInfo.parse(write_path, output="JSON")
     encode_tracks = json.loads(encode_media_info)["media"]["track"]
 
-    write_info_list.append(
-        "RELEASE.NAME........: " +
-        str(pathlib.PureWindowsPath(write_path)).split("\\")[-1])
-    write_info_list.append(
-        "\n" + "RELEASE.DATE........: " +
-        time.strftime("%Y-%m-%d", time.localtime()))
+    write_info_list.append("RELEASE.NAME........: " + str(pathlib.PureWindowsPath(write_path)).split("\\")[-1])
+    write_info_list.append("\n" + "RELEASE.DATE........: " + time.strftime("%Y-%m-%d", time.localtime()))
 
     try:
         file_size = encode_tracks[0]["FileSize_String"]
@@ -70,19 +68,25 @@ def get_media_info(input_path: str, encode_or_dl: str, uploader_name: str) -> li
         for video_track_index, video_track in enumerate(encode_tracks):
             if video_track["@type"] == "Video":
                 write_info_list.append(
-                    "\n" + "RESOLUTION..........: " +
-                    encode_tracks[video_track_index]["Width"] + "x" +
-                    encode_tracks[video_track_index]["Height"])
+                    "\n"
+                    + "RESOLUTION..........: "
+                    + encode_tracks[video_track_index]["Width"]
+                    + "x"
+                    + encode_tracks[video_track_index]["Height"]
+                )
                 write_info_list.append(
-                    "\n" + "BIT.DEPTH...........: " +
-                    encode_tracks[video_track_index]["BitDepth"] + " bits")
+                    "\n" + "BIT.DEPTH...........: " + encode_tracks[video_track_index]["BitDepth"] + " bits"
+                )
                 write_info_list.append(
-                    "\n" + "FRAME.RATE..........: " +
-                    encode_tracks[video_track_index]["FrameRate"] + " FPS")
+                    "\n" + "FRAME.RATE..........: " + encode_tracks[video_track_index]["FrameRate"] + " FPS"
+                )
                 write_info_list.append(
-                    "\n" + "VIDEO...............: " +
-                    encode_tracks[video_track_index]["Format"] + ", " +
-                    encode_tracks[video_track_index]["Format_Profile"])
+                    "\n"
+                    + "VIDEO...............: "
+                    + encode_tracks[video_track_index]["Format"]
+                    + ", "
+                    + encode_tracks[video_track_index]["Format_Profile"]
+                )
                 video_track_id += 1
     except Exception as e:
         logger.warning(e)
@@ -104,8 +108,12 @@ def get_media_info(input_path: str, encode_or_dl: str, uploader_name: str) -> li
                     logger.warning("音轨" + str(audio_track_id) + "缺少语言信息，请自行填写")
                     write_info_list.append("Ambiguous!!!")
 
-                write_info_list.append(", " + encode_tracks[audio_track_index]
-                ["Channels"] + " channels, " + encode_tracks[audio_track_index]["Format"])
+                write_info_list.append(
+                    ", "
+                    + encode_tracks[audio_track_index]["Channels"]
+                    + " channels, "
+                    + encode_tracks[audio_track_index]["Format"]
+                )
                 audio_track_id += 1
     except Exception as e:
         logger.warning(e)
@@ -118,20 +126,16 @@ def get_media_info(input_path: str, encode_or_dl: str, uploader_name: str) -> li
                 write_info_list.append("\n" + "SUBTITLE#" + str(subtitle_track_id).zfill(2) + ".........: ")
 
                 if "Language_String" in subtitle_track and "Title" not in subtitle_track:
-                    write_info_list.append(
-                        encode_tracks[subtitle_track_index]["Language_String"])
+                    write_info_list.append(encode_tracks[subtitle_track_index]["Language_String"])
                 elif "Language" in subtitle_track and "Title" not in subtitle_track:
-                    write_info_list.append(
-                        encode_tracks[subtitle_track_index]["Language"])
+                    write_info_list.append(encode_tracks[subtitle_track_index]["Language"])
                 elif "Title" in subtitle_track:
-                    write_info_list.append(
-                        encode_tracks[subtitle_track_index]["Title"])
+                    write_info_list.append(encode_tracks[subtitle_track_index]["Title"])
                 else:
                     logger.warning("字幕轨" + str(subtitle_track_id) + "缺少语言信息，请自行填写")
                     write_info_list.append("Ambiguous!!!")
 
-                write_info_list.append(
-                    ", " + encode_tracks[subtitle_track_index]["Format"])
+                write_info_list.append(", " + encode_tracks[subtitle_track_index]["Format"])
                 subtitle_track_id += 1
     except Exception as e:
         logger.warning(e)

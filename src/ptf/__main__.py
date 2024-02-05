@@ -2,11 +2,13 @@ import argparse
 import os
 import pathlib
 import sys
+
 from loguru import logger
-from src.ptgenplus import PtGenPlus
+
+from ptf.ptgenplus import PtGenPlus
 
 # python -m PyInstaller -F -n ptf -i assets/favicon.icon __main__.py
-if getattr(sys, 'frozen', False):
+if getattr(sys, "frozen", False):
     # frozen
     projectPATH = pathlib.Path(os.path.abspath(os.path.dirname(sys.executable)))
 else:

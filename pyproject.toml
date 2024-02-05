@@ -1,0 +1,107 @@
+[build-system]
+build-backend = "pdm.backend"
+requires = ["pdm-backend"]
+
+[project]
+authors = [
+  {name = "Tohrusky", email = "65994850+Tohrusky@users.noreply.github.com"}
+]
+classifiers = [
+  "Programming Language :: Python :: 3"
+]
+dependencies = [
+  "loguru==0.7.0",
+  "opencv_python~=4.7.0.72",
+  "pymediainfo==6.0.1",
+  "pyperclip~=1.8.2",
+  "PyYAML~=6.0",
+  "requests==2.31.0",
+  "PySocks~=1.7.1",
+  "tenacity==8.2.2",
+  "torrentool~=1.1.1",
+  "lxml~=4.9.1"
+]
+license = {text = "MIT License"}
+name = "ptf"
+readme = "README.md"
+requires-python = ">=3.8, <3.13"
+version = "0.0.1"
+
+[tool.coverage.run]
+omit = ["src"]
+
+[tool.mypy]
+disable_error_code = "attr-defined"
+disallow_any_generics = false
+ignore_missing_imports = true
+strict = true
+warn_return_any = false
+
+[tool.pdm.dev-dependencies]
+lint = [
+  "pre-commit",
+  "ruff",
+  "mypy"
+]
+test = [
+  "pytest",
+  "pytest-cov",
+  "types-PyYAML",
+  "types-requests",
+  "pyinstaller~=6.3"
+]
+
+[tool.pdm.scripts]
+
+[tool.pdm.scripts.lint]
+composite = [
+  "mypy src tests",
+  "ruff check . --fix --exit-non-zero-on-fix",
+  "ruff format ."
+]
+help = "Check code style against linters"
+
+[tool.pdm.scripts.post_install]
+composite = [
+  "pre-commit install"
+]
+help = "Install the pre-commit hook"
+
+[tool.pdm.scripts.post_pyinstaller]
+call = "scripts.post_pyinstaller:post_pyinstaller"
+help = "Copy config to the dist folder"
+
+[tool.pdm.scripts.pyinstaller]
+cmd = "pyinstaller -n ptf -i assets/favicon.ico src/ptf/__main__.py"
+help = "Build the executable with PyInstaller"
+
+[tool.pdm.scripts.test]
+cmd = "pytest tests --cov=src --cov-report=xml --cov-report=html"
+help = "Run tests with coverage"
+
+[tool.ruff]
+extend-ignore = ["B018", "B019", "PGH003", "E721", "C408", "RUF012", "RUF001", "RUF003"]
+extend-select = [
+  "I",  # isort
+  "B",  # flake8-bugbear
+  "C4",  # flake8-comprehensions
+  "PGH",  # pygrep-hooks
+  "RUF",  # ruff
+  "W",  # pycodestyle
+  "YTT"  # flake8-2020
+]
+fixable = ["ALL"]
+line-length = 120
+
+[tool.ruff.format]
+indent-style = "space"
+line-ending = "auto"
+quote-style = "double"
+skip-magic-trailing-comma = false
+
+[tool.ruff.isort]
+combine-as-imports = true
+known-first-party = ["pdm"]
+
+[tool.ruff.mccabe]
+max-complexity = 10

@@ -9,8 +9,8 @@ jobs:
   Build:
     strategy:
       matrix:
-        python-version: [ "3.10" ]
-        os-version: [ "macos-latest", "windows-latest", "ubuntu-20.04" ]
+        python-version: ["3.11"]
+        os-version: ["macos-latest", "windows-latest", "ubuntu-20.04"]
 
     runs-on: ${{ matrix.os-version }}
     steps:
@@ -18,21 +18,25 @@ jobs:
         with:
           submodules: recursive
 
-      - uses: actions/setup-python@v4
+      - uses: pdm-project/setup-pdm@v3
+        name: Setup PDM
         with:
           python-version: ${{ matrix.python-version }}
           architecture: x64
+          version: 2.11.1
+          prerelease: false
+          enable-pep582: false
+          allow-python-prereleases: false
+          update-python: true
 
       - name: Build
         run: |
-          pip install -r requirements.txt
-          pip install pyinstaller
-          python -m PyInstaller -F -n ptf -i assets/favicon.ico __main__.py
+          pdm install
+          pdm run pyinstaller
 
       - name: windows
         if: matrix.os-version == 'windows-latest'
         run: |
-          xcopy config.yaml dist
           cd dist
           7z a -r PT-Factory-x86-Windows.zip ./*
 
@@ -46,7 +50,6 @@ jobs:
       - name: macos
         if: matrix.os-version == 'macos-latest'
         run: |
-          cp config.yaml dist
           cd dist
           zip -9 -r PT-Factory-x86-MacOS.zip ./*
 
@@ -60,7 +63,6 @@ jobs:
       - name: linux
         if: matrix.os-version == 'ubuntu-20.04'
         run: |
-          cp config.yaml dist
           cd dist
           zip -9 -r PT-Factory-x86-Linux.zip ./*
 
@@ -70,7 +72,6 @@ jobs:
         with:
           name: PT-Factory-x86-Linux
           path: dist/PT-Factory-x86-Linux.zip
-
 
   setup:
     runs-on: ubuntu-latest
@@ -82,7 +83,7 @@ jobs:
         run: echo "DATE=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
 
   Release:
-    needs: [ Build, setup ]
+    needs: [Build, setup]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v3
@@ -99,7 +100,6 @@ jobs:
           mv assets/PT-Factory-x86-Windows/PT-Factory-x86-Windows.zip dist
           mv assets/PT-Factory-x86-MacOS/PT-Factory-x86-MacOS.zip dist
           mv assets/PT-Factory-x86-Linux/PT-Factory-x86-Linux.zip dist
-
 
       - name: Create Release and Upload Release Asset
         uses: softprops/action-gh-release@v1
